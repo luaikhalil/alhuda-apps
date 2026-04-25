@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Alhuda Apps — Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f1a;--surface:#1a1a2e;--surface2:#16213e;--border:#2a2a4a;
+  --gold:#f0b429;--gold2:#d4960e;--text:#fff;--sub:#8888aa;
+  --green:#4caf80;--red:#f06060;--blue:#60a0f0;
+  --input-bg:#0f0f1a;
+}
+body{font-family:'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── LOGIN ── */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;width:100%;max-width:380px;text-align:center}
+.login-card img{width:72px;height:72px;border-radius:16px;margin-bottom:20px}
+.login-card h1{font-size:22px;margin-bottom:6px}
+.login-card p{color:var(--sub);font-size:14px;margin-bottom:28px}
+.inp{width:100%;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:13px 16px;border-radius:12px;font-size:15px;outline:none;transition:.2s;margin-bottom:14px}
+.inp:focus{border-color:var(--gold)}
+.btn-gold{width:100%;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1a2e;border:none;padding:14px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;transition:.2s}
+.btn-gold:hover{opacity:.9;transform:translateY(-1px)}
+.err{color:var(--red);font-size:13px;margin-top:10px}
+
+/* ── LAYOUT ── */
+#app{display:none;flex-direction:column;min-height:100vh}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.hdr-left{display:flex;align-items:center;gap:12px}
+.hdr-left img{width:36px;height:36px;border-radius:8px}
+.hdr-left span{font-size:18px;font-weight:700}
+.hdr-left .tag{background:var(--gold);color:#1a1a2e;font-size:11px;font-weight:800;padding:3px 10px;border-radius:10px}
+.btn-logout{background:var(--border);border:none;color:var(--sub);padding:8px 16px;border-radius:10px;font-size:13px;cursor:pointer}
+.btn-logout:hover{color:var(--red)}
+
+main{display:flex;flex:1;gap:0}
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);padding:20px 0;flex-shrink:0}
+.nav-item{display:flex;align-items:center;gap:10px;padding:12px 20px;cursor:pointer;font-size:14px;color:var(--sub);transition:.15s;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+.nav-item.active{color:var(--gold);border-left-color:var(--gold);background:rgba(240,180,41,.06)}
+.nav-item .ico{font-size:18px;width:24px;text-align:center}
+
+.content{flex:1;padding:28px;overflow-y:auto}
+
+/* ── CARDS ── */
+.page{display:none}
+.page.active{display:block}
+.page-title{font-size:22px;font-weight:700;margin-bottom:24px;display:flex;align-items:center;gap:12px}
+.page-title .sub{font-size:14px;font-weight:400;color:var(--sub)}
+
+/* ── APP LIST ── */
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.app-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;transition:.2s}
+.app-card:hover{border-color:var(--gold);box-shadow:0 4px 20px rgba(240,180,41,.1)}
+.app-card-top{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px}
+.app-card-icon{width:56px;height:56px;border-radius:14px;object-fit:cover;border:1px solid var(--border);background:var(--surface2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden}
+.app-card-icon img{width:100%;height:100%;object-fit:cover;border-radius:13px}
+.app-card-name{font-size:16px;font-weight:700;margin-bottom:3px}
+.app-card-ver{font-size:12px;color:var(--sub)}
+.status-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px;display:inline-block;margin-top:5px}
+.status-published{background:#1a3a2a;color:var(--green)}
+.status-coming_soon{background:#1a2a3a;color:var(--blue)}
+.status-draft{background:#2a2a2a;color:var(--sub)}
+.app-card-actions{display:flex;gap:8px;margin-top:14px}
+.btn-sm{padding:7px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:.15s}
+.btn-edit{background:var(--gold);color:#1a1a2e}
+.btn-edit:hover{background:var(--gold2)}
+.btn-del{background:var(--border);color:var(--sub)}
+.btn-del:hover{background:var(--red);color:#fff}
+.btn-add{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1a2e;border:none;padding:11px 24px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:8px;transition:.2s;margin-bottom:20px}
+.btn-add:hover{transform:translateY(-1px)}
+
+/* ── FORM ── */
+.form-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;max-width:800px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.form-row.full{grid-template-columns:1fr}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--sub);margin-bottom:6px;text-transform:uppercase;letter-spacing:.6px}
+.field input,.field textarea,.field select{width:100%;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:11px 14px;border-radius:10px;font-size:14px;outline:none;transition:.2s;font-family:inherit}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--gold)}
+.field textarea{resize:vertical;min-height:100px}
+.field select option{background:var(--surface)}
+.form-actions{display:flex;gap:12px;margin-top:24px}
+.btn-save{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1a2e;border:none;padding:12px 32px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer}
+.btn-cancel{background:var(--border);color:var(--sub);border:none;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer}
+.btn-cancel:hover{color:var(--text)}
+
+/* ── UPLOAD ZONES ── */
+.upload-zone{border:2px dashed var(--border);border-radius:14px;padding:28px;text-align:center;cursor:pointer;transition:.2s;position:relative}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--gold);background:rgba(240,180,41,.05)}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-zone .ico{font-size:36px;margin-bottom:10px}
+.upload-zone p{font-size:14px;color:var(--sub)}
+.upload-zone strong{color:var(--gold)}
+.preview-img{width:100px;height:100px;border-radius:16px;object-fit:cover;border:2px solid var(--gold);margin:10px auto;display:block}
+
+/* ── SCREENSHOTS MANAGER ── */
+.ss-grid{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px}
+.ss-thumb{position:relative;display:inline-block}
+.ss-thumb img{height:140px;width:auto;border-radius:10px;border:1px solid var(--border);display:block}
+.ss-thumb .del-btn{position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;background:var(--red);border:none;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.ss-thumb input.caption-inp{width:100%;background:var(--input-bg);border:1px solid var(--border);color:var(--text);padding:5px 8px;border-radius:6px;font-size:12px;margin-top:5px;outline:none}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:28px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center}
+.stat-card .num{font-size:32px;font-weight:800;color:var(--gold)}
+.stat-card .lbl{font-size:12px;color:var(--sub);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:28px;right:28px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 20px;font-size:14px;z-index:9999;transform:translateY(80px);opacity:0;transition:.3s;display:flex;align-items:center;gap:10px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.ok{border-color:var(--green);color:var(--green)}
+.toast.err{border-color:var(--red);color:var(--red)}
+
+/* ── LOADING ── */
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:40px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <img src="https://vecqselsvubtqxzllonk.supabase.co/storage/v1/object/public/store-assets/brand/logo.png" onerror="this.style.display='none'" alt=""/>
+    <h1>Alhuda Apps Admin</h1>
+    <p>Sign in to manage the app store</p>
+    <input class="inp" id="adminPass" type="password" placeholder="Admin Password" onkeydown="if(event.key==='Enter')login()"/>
+    <button class="btn-gold" onclick="login()">Sign In</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <header>
+    <div class="hdr-left">
+      <img src="https://vecqselsvubtqxzllonk.supabase.co/storage/v1/object/public/store-assets/brand/logo.png" onerror="this.style.fontSize='24px';this.outerHTML='<span style=font-size:24px>🏪</span>'" alt=""/>
+      <span>App Store Admin</span>
+      <span class="tag">ADMIN</span>
+    </div>
+    <button class="btn-logout" onclick="logout()">Sign Out</button>
+  </header>
+
+  <main>
+    <div class="sidebar">
+      <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
+        <span class="ico">📊</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="showPage('apps')" id="nav-apps">
+        <span class="ico">📱</span> Apps
+      </div>
+      <div class="nav-item" onclick="showPage('branding')" id="nav-branding">
+        <span class="ico">🎨</span> Branding
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-title">Dashboard</div>
+        <div class="stats-row" id="statsRow">
+          <div class="stat-card"><div class="num" id="statTotal">–</div><div class="lbl">Total Apps</div></div>
+          <div class="stat-card"><div class="num" id="statPublished">–</div><div class="lbl">Published</div></div>
+          <div class="stat-card"><div class="num" id="statSoon">–</div><div class="lbl">Coming Soon</div></div>
+          <div class="stat-card"><div class="num" id="statDraft">–</div><div class="lbl">Drafts</div></div>
+        </div>
+        <div class="form-card" style="max-width:500px">
+          <div style="font-size:16px;font-weight:700;margin-bottom:16px">🔗 Store URL</div>
+          <div style="background:var(--input-bg);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--gold);word-break:break-all">
+            https://apps.alhudaadvance.com
+          </div>
+          <div style="margin-top:12px;font-size:13px;color:var(--sub)">Changes you make here appear on the store immediately after saving.</div>
+        </div>
+      </div>
+
+      <!-- APPS LIST -->
+      <div class="page" id="page-apps">
+        <div class="page-title">
+          Apps
+          <span class="sub" id="appsCount"></span>
+        </div>
+        <button class="btn-add" onclick="showForm()">
+          <span>＋</span> Add New App
+        </button>
+        <div class="apps-grid" id="appsGrid">
+          <div class="spinner"></div>
+        </div>
+      </div>
+
+      <!-- APP FORM -->
+      <div class="page" id="page-form">
+        <div class="page-title" id="formTitle">Add New App</div>
+        <div class="form-card">
+
+          <div class="form-row">
+            <div class="field">
+              <label>App Name (English)</label>
+              <input id="f_name" type="text" placeholder="e.g. Alhuda Staff"/>
+            </div>
+            <div class="field">
+              <label>App Name (Arabic)</label>
+              <input id="f_name_ar" type="text" placeholder="e.g. موظفي الهدى" dir="rtl"/>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label>Version</label>
+              <input id="f_version" type="text" placeholder="1.0.0"/>
+            </div>
+            <div class="field">
+              <label>Status</label>
+              <select id="f_status">
+                <option value="published">✅ Published</option>
+                <option value="coming_soon">🔜 Coming Soon</option>
+                <option value="draft">📝 Draft</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label>Size</label>
+              <input id="f_size" type="text" placeholder="~12 MB"/>
+            </div>
+            <div class="field">
+              <label>Platform</label>
+              <input id="f_platform" type="text" placeholder="Android 8.0+"/>
+            </div>
+          </div>
+
+          <div class="form-row full">
+            <div class="field">
+              <label>Description</label>
+              <textarea id="f_desc" placeholder="What does this app do?"></textarea>
+            </div>
+          </div>
+
+          <div class="form-row full">
+            <div class="field">
+              <label>What's New / Release Notes</label>
+              <textarea id="f_whats_new" placeholder="Version 1.0.0&#10;• Feature one&#10;• Feature two"></textarea>
+            </div>
+          </div>
+
+          <!-- Icon Upload -->
+          <div class="field" style="margin-bottom:16px">
+            <label>App Icon</label>
+            <div class="upload-zone" id="iconZone" ondragover="dragOver(event,'iconZone')" ondragleave="dragLeave('iconZone')" ondrop="dropFile(event,'icon')">
+              <input type="file" accept="image/*" onchange="handleIconFile(this.files[0])"/>
+              <div class="ico">🖼️</div>
+              <p><strong>Click or drag</strong> to upload icon<br/>Recommended: 512×512 PNG</p>
+            </div>
+            <img id="iconPreview" class="preview-img" src="" style="display:none"/>
+            <input id="f_icon_url" type="hidden"/>
+          </div>
+
+          <!-- APK Upload -->
+          <div class="field" style="margin-bottom:16px">
+            <label>APK File</label>
+            <div class="upload-zone" id="apkZone" ondragover="dragOver(event,'apkZone')" ondragleave="dragLeave('apkZone')" ondrop="dropFile(event,'apk')">
+              <input type="file" accept=".apk" onchange="handleApkFile(this.files[0])"/>
+              <div class="ico">📦</div>
+              <p><strong>Click or drag</strong> to upload APK file</p>
+            </div>
+            <div id="apkStatus" style="font-size:13px;color:var(--green);margin-top:8px"></div>
+            <input id="f_apk_url" type="hidden"/>
+          </div>
+
+          <!-- Screenshots -->
+          <div class="field" style="margin-bottom:24px">
+            <label>Screenshots</label>
+            <div class="upload-zone" ondragover="dragOver(event,'ssZone')" ondragleave="dragLeave('ssZone')" ondrop="dropFile(event,'screenshots')" id="ssZone">
+              <input type="file" accept="image/*" multiple onchange="handleScreenshots(this.files)"/>
+              <div class="ico">📸</div>
+              <p><strong>Click or drag</strong> to add screenshots<br/>You can upload multiple at once</p>
+            </div>
+            <div class="ss-grid" id="ssGrid"></div>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn-save" onclick="saveApp()">💾 Save App</button>
+            <button class="btn-cancel" onclick="showPage('apps')">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BRANDING -->
+      <div class="page" id="page-branding">
+        <div class="page-title">Branding</div>
+        <div class="form-card" style="max-width:500px">
+          <p style="font-size:14px;color:var(--sub);margin-bottom:20px">Upload your store logo and banner. These appear on the public store page.</p>
+
+          <div class="field" style="margin-bottom:20px">
+            <label>Store Logo (Nav & Hero)</label>
+            <div class="upload-zone" ondragover="dragOver(event,'brandLogoZone')" ondragleave="dragLeave('brandLogoZone')" ondrop="dropFile(event,'brandLogo')" id="brandLogoZone">
+              <input type="file" accept="image/*" onchange="handleBrandFile(this.files[0],'logo')"/>
+              <div class="ico">🏷️</div>
+              <p><strong>Click or drag</strong> logo image<br/>PNG with transparency recommended</p>
+            </div>
+            <img id="brandLogoPreview" class="preview-img" style="display:none"/>
+          </div>
+
+          <div class="field" style="margin-bottom:20px">
+            <label>AL-HUDA ADVANCE Full Logo (wide)</label>
+            <div class="upload-zone" ondragover="dragOver(event,'brandFullZone')" ondragleave="dragLeave('brandFullZone')" ondrop="dropFile(event,'brandFull')" id="brandFullZone">
+              <input type="file" accept="image/*" onchange="handleBrandFile(this.files[0],'full_logo')"/>
+              <div class="ico">🖼️</div>
+              <p><strong>Click or drag</strong> the full horizontal logo<br/>(the one with Arabic text)</p>
+            </div>
+            <img id="brandFullPreview" style="max-width:100%;border-radius:10px;margin-top:10px;display:none"/>
+          </div>
+
+          <button class="btn-save" onclick="toast('Branding saved!','ok')" style="width:100%">Save Branding</button>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+</div>
+
+<div class="toast" id="toastEl"></div>
+
+<script>
+const SUPA_URL = 'https://vecqselsvubtqxzllonk.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZlY3FzZWxzdnVidHF4emxsb25rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2NzY3ODIsImV4cCI6MjA5MTI1Mjc4Mn0.x9HJfCFFlJ1nryMTT9tEMTmfi4qpjNFUhLKDAp9A14c';
+const ADMIN_PASS = 'alhuda2025admin'; // Change this to your preferred password
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+const BUCKET = 'store-assets';
+
+let editingId = null;
+let pendingScreenshots = []; // [{file, url, caption}]
+
+// ── AUTH ──────────────────────────────────────────────────────────────────
+function login() {
+  const pw = document.getElementById('adminPass').value;
+  if (pw === ADMIN_PASS) {
+    sessionStorage.setItem('alhuda_admin', '1');
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    loadDashboard();
+    loadApps();
+  } else {
+    document.getElementById('loginErr').textContent = 'Wrong password. Try again.';
+  }
+}
+function logout() {
+  sessionStorage.removeItem('alhuda_admin');
+  location.reload();
+}
+window.addEventListener('load', () => {
+  if (sessionStorage.getItem('alhuda_admin')) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    loadDashboard();
+    loadApps();
+  }
+});
+
+// ── NAV ───────────────────────────────────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const ni = document.getElementById('nav-' + name);
+  if (ni) ni.classList.add('active');
+}
+function showForm(app = null) {
+  editingId = app ? app.id : null;
+  document.getElementById('formTitle').textContent = app ? 'Edit App' : 'Add New App';
+  document.getElementById('f_name').value = app?.name || '';
+  document.getElementById('f_name_ar').value = app?.name_ar || '';
+  document.getElementById('f_version').value = app?.version || '1.0.0';
+  document.getElementById('f_status').value = app?.status || 'draft';
+  document.getElementById('f_size').value = app?.size_mb || '~12 MB';
+  document.getElementById('f_platform').value = app?.platform || 'Android 8.0+';
+  document.getElementById('f_desc').value = app?.description || '';
+  document.getElementById('f_whats_new').value = app?.whats_new || '';
+  document.getElementById('f_icon_url').value = app?.icon_url || '';
+  document.getElementById('f_apk_url').value = app?.apk_url || '';
+
+  const ip = document.getElementById('iconPreview');
+  if (app?.icon_url) { ip.src = app.icon_url; ip.style.display = 'block'; }
+  else ip.style.display = 'none';
+
+  const as = document.getElementById('apkStatus');
+  as.textContent = app?.apk_url ? '✓ APK already uploaded' : '';
+
+  pendingScreenshots = [];
+  if (app) loadExistingScreenshots(app.id);
+  else document.getElementById('ssGrid').innerHTML = '';
+
+  showPage('form');
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────
+async function loadDashboard() {
+  const { data } = await sb.from('store_apps').select('status');
+  if (!data) return;
+  document.getElementById('statTotal').textContent = data.length;
+  document.getElementById('statPublished').textContent = data.filter(a => a.status === 'published').length;
+  document.getElementById('statSoon').textContent = data.filter(a => a.status === 'coming_soon').length;
+  document.getElementById('statDraft').textContent = data.filter(a => a.status === 'draft').length;
+}
+
+// ── APPS ──────────────────────────────────────────────────────────────────
+async function loadApps() {
+  const grid = document.getElementById('appsGrid');
+  const { data, error } = await sb.from('store_apps').select('*').order('sort_order');
+  if (error) { grid.innerHTML = '<p style="color:var(--red)">Error loading apps: ' + error.message + '</p>'; return; }
+  document.getElementById('appsCount').textContent = data.length + ' apps';
+  if (!data.length) { grid.innerHTML = '<p style="color:var(--sub)">No apps yet. Click "Add New App" to get started.</p>'; return; }
+  grid.innerHTML = data.map(app => `
+    <div class="app-card">
+      <div class="app-card-top">
+        <div class="app-card-icon">
+          ${app.icon_url ? `<img src="${app.icon_url}" alt=""/>` : '📱'}
+        </div>
+        <div>
+          <div class="app-card-name">${app.name}</div>
+          <div class="app-card-ver">v${app.version}</div>
+          <span class="status-badge status-${app.status}">${
+            app.status === 'published' ? '✅ Published' :
+            app.status === 'coming_soon' ? '🔜 Coming Soon' : '📝 Draft'
+          }</span>
+        </div>
+      </div>
+      <div class="app-card-actions">
+        <button class="btn-sm btn-edit" onclick="editApp('${app.id}')">✏️ Edit</button>
+        <button class="btn-sm btn-del" onclick="deleteApp('${app.id}','${app.name}')">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function editApp(id) {
+  const { data } = await sb.from('store_apps').select('*').eq('id', id).single();
+  showForm(data);
+}
+
+async function deleteApp(id, name) {
+  if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+  await sb.from('store_screenshots').delete().eq('app_id', id);
+  await sb.from('store_apps').delete().eq('id', id);
+  toast('App deleted', 'ok');
+  loadApps();
+  loadDashboard();
+}
+
+// ── SAVE APP ──────────────────────────────────────────────────────────────
+async function saveApp() {
+  const name = document.getElementById('f_name').value.trim();
+  if (!name) { toast('App name is required', 'err'); return; }
+
+  const payload = {
+    name,
+    name_ar:     document.getElementById('f_name_ar').value.trim(),
+    version:     document.getElementById('f_version').value.trim() || '1.0.0',
+    status:      document.getElementById('f_status').value,
+    size_mb:     document.getElementById('f_size').value.trim(),
+    platform:    document.getElementById('f_platform').value.trim(),
+    description: document.getElementById('f_desc').value.trim(),
+    whats_new:   document.getElementById('f_whats_new').value.trim(),
+    icon_url:    document.getElementById('f_icon_url').value,
+    apk_url:     document.getElementById('f_apk_url').value,
+    updated_at:  new Date().toISOString(),
+  };
+
+  let appId = editingId;
+  if (editingId) {
+    const { error } = await sb.from('store_apps').update(payload).eq('id', editingId);
+    if (error) { toast('Save failed: ' + error.message, 'err'); return; }
+  } else {
+    const { data, error } = await sb.from('store_apps').insert(payload).select().single();
+    if (error) { toast('Save failed: ' + error.message, 'err'); return; }
+    appId = data.id;
+  }
+
+  // Save pending screenshots
+  for (const ss of pendingScreenshots) {
+    if (ss.file) {
+      const url = await uploadFile(ss.file, `screenshots/${appId}/${Date.now()}_${ss.file.name}`);
+      if (url) {
+        await sb.from('store_screenshots').insert({ app_id: appId, url, caption: ss.caption, sort_order: ss.order });
+      }
+    }
+  }
+
+  toast('App saved successfully! ✓', 'ok');
+  setTimeout(() => { showPage('apps'); loadApps(); loadDashboard(); }, 800);
+}
+
+// ── FILE UPLOAD ───────────────────────────────────────────────────────────
+async function uploadFile(file, path) {
+  const { data, error } = await sb.storage.from(BUCKET).upload(path, file, { upsert: true });
+  if (error) { toast('Upload failed: ' + error.message, 'err'); return null; }
+  const { data: urlData } = sb.storage.from(BUCKET).getPublicUrl(path);
+  return urlData.publicUrl;
+}
+
+function handleIconFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const ip = document.getElementById('iconPreview');
+    ip.src = e.target.result; ip.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+  // Upload immediately
+  uploadFile(file, `icons/${Date.now()}_${file.name}`).then(url => {
+    if (url) { document.getElementById('f_icon_url').value = url; toast('Icon uploaded ✓', 'ok'); }
+  });
+}
+
+function handleApkFile(file) {
+  if (!file) return;
+  document.getElementById('apkStatus').textContent = '⏳ Uploading APK...';
+  uploadFile(file, `apks/${Date.now()}_${file.name}`).then(url => {
+    if (url) {
+      document.getElementById('f_apk_url').value = url;
+      document.getElementById('apkStatus').textContent = '✓ APK uploaded: ' + file.name;
+      toast('APK uploaded ✓', 'ok');
+    }
+  });
+}
+
+function handleScreenshots(files) {
+  Array.from(files).forEach(f => addScreenshotPreview(f));
+}
+
+function addScreenshotPreview(file, existingUrl = null, existingId = null) {
+  const grid = document.getElementById('ssGrid');
+  const idx = pendingScreenshots.length;
+  const entry = { file, url: existingUrl, caption: '', order: idx, dbId: existingId };
+  pendingScreenshots.push(entry);
+
+  const div = document.createElement('div');
+  div.className = 'ss-thumb';
+  div.dataset.idx = idx;
+
+  const img = document.createElement('img');
+  if (existingUrl) { img.src = existingUrl; }
+  else {
+    const reader = new FileReader();
+    reader.onload = e => img.src = e.target.result;
+    reader.readAsDataURL(file);
+  }
+
+  const del = document.createElement('button');
+  del.className = 'del-btn';
+  del.textContent = '×';
+  del.onclick = () => removeScreenshot(idx, existingId, div);
+
+  const cap = document.createElement('input');
+  cap.className = 'caption-inp';
+  cap.placeholder = 'Caption (optional)';
+  cap.oninput = () => entry.caption = cap.value;
+
+  div.appendChild(img);
+  div.appendChild(del);
+  div.appendChild(cap);
+  grid.appendChild(div);
+}
+
+async function removeScreenshot(idx, dbId, el) {
+  if (dbId) await sb.from('store_screenshots').delete().eq('id', dbId);
+  pendingScreenshots[idx] = null;
+  el.remove();
+}
+
+async function loadExistingScreenshots(appId) {
+  const grid = document.getElementById('ssGrid');
+  grid.innerHTML = '';
+  pendingScreenshots = [];
+  const { data } = await sb.from('store_screenshots').select('*').eq('app_id', appId).order('sort_order');
+  (data || []).forEach(ss => addScreenshotPreview(null, ss.url, ss.id));
+}
+
+function handleBrandFile(file, type) {
+  if (!file) return;
+  const prevId = type === 'logo' ? 'brandLogoPreview' : 'brandFullPreview';
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById(prevId);
+    img.src = e.target.result;
+    img.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+  uploadFile(file, `brand/${type}.png`).then(url => {
+    if (url) toast(type === 'logo' ? 'Logo uploaded ✓' : 'Full logo uploaded ✓', 'ok');
+  });
+}
+
+// ── DRAG & DROP ───────────────────────────────────────────────────────────
+function dragOver(e, id) { e.preventDefault(); document.getElementById(id).classList.add('drag'); }
+function dragLeave(id) { document.getElementById(id).classList.remove('drag'); }
+function dropFile(e, type) {
+  e.preventDefault();
+  const files = e.dataTransfer.files;
+  if (type === 'icon') handleIconFile(files[0]);
+  else if (type === 'apk') handleApkFile(files[0]);
+  else if (type === 'screenshots') handleScreenshots(files);
+  else if (type === 'brandLogo') handleBrandFile(files[0], 'logo');
+  else if (type === 'brandFull') handleBrandFile(files[0], 'full_logo');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────
+function toast(msg, type = 'ok') {
+  const el = document.getElementById('toastEl');
+  el.textContent = (type === 'ok' ? '✓ ' : '✗ ') + msg;
+  el.className = 'toast show ' + type;
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
