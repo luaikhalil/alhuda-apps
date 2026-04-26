@@ -12,6 +12,7 @@ body{font-family:'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:v
 nav{background:var(--dark);padding:0 32px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.4)}
 .nav-logo{display:flex;align-items:center;gap:14px;text-decoration:none}
 .nav-logo-icon{width:42px;height:42px;border-radius:10px;object-fit:cover}
+.nav-logo-full{height:40px;width:auto;max-width:220px;object-fit:contain;display:none}
 .nav-logo-text .brand{color:var(--gold);font-size:18px;font-weight:800;display:block}
 .nav-logo-text .s2{color:rgba(255,255,255,.45);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
 .nav-search{flex:1;max-width:480px;margin:0 40px;position:relative}
@@ -100,8 +101,9 @@ footer p{font-size:12px;margin-top:6px}
 <body>
 <nav>
   <a class="nav-logo" href="#">
+    <img id="navFullLogo" class="nav-logo-full" src="" alt="Alhuda Advance"/>
     <img id="navIcon" class="nav-logo-icon" src="" alt="" style="display:none"/>
-    <div class="nav-logo-text">
+    <div class="nav-logo-text" id="navText">
       <span class="brand">Alhuda Apps</span>
       <span class="s2">Official Store</span>
     </div>
@@ -179,9 +181,19 @@ function loadBranding(){
     ic.src=BU+'/brand/logo.png'+t;
     ic.onload=()=>{ic.style.display='block';};
   };
-  const ni=document.getElementById('navIcon');
-  ni.src=BU+'/brand/logo.png'+t;
-  ni.onload=()=>{ni.style.display='block';};
+  // Nav: try full logo first, fall back to small icon
+  const navFull=document.getElementById('navFullLogo');
+  const navText=document.getElementById('navText');
+  navFull.src=BU+'/brand/full_logo.png'+t;
+  navFull.onload=()=>{
+    navFull.style.display='block';
+    navText.style.display='none'; // hide "Alhuda Apps" text when real logo loads
+  };
+  navFull.onerror=()=>{
+    const ni=document.getElementById('navIcon');
+    ni.src=BU+'/brand/logo.png'+t;
+    ni.onload=()=>{ni.style.display='block';};
+  };
   const fl=document.getElementById('footerLogo');
   fl.src=BU+'/brand/logo.png'+t;
   fl.onload=()=>{fl.style.display='block';};
