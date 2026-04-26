@@ -44,3 +44,33 @@ ALTER TABLE store_screenshots DISABLE ROW LEVEL SECURITY;
 
 -- 5. Make the bucket public
 -- In Supabase: Storage → store-assets → Policies → Enable public access
+
+-- 6. Storage upload policy — allows the anon key to upload files
+--    Run this AFTER creating the store-assets bucket
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('store-assets', 'store-assets', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- Allow anyone (anon key) to upload to store-assets
+CREATE POLICY "Allow anon uploads to store-assets"
+ON storage.objects FOR INSERT
+TO anon
+WITH CHECK (bucket_id = 'store-assets');
+
+-- Allow anyone to read/download from store-assets
+CREATE POLICY "Allow public reads from store-assets"
+ON storage.objects FOR SELECT
+TO anon
+USING (bucket_id = 'store-assets');
+
+-- Allow anyone to update (overwrite) files in store-assets
+CREATE POLICY "Allow anon updates in store-assets"
+ON storage.objects FOR UPDATE
+TO anon
+USING (bucket_id = 'store-assets');
+
+-- Allow anyone to delete files in store-assets (needed for replace)
+CREATE POLICY "Allow anon deletes in store-assets"
+ON storage.objects FOR DELETE
+TO anon
+USING (bucket_id = 'store-assets');
