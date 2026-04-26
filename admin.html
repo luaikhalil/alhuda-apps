@@ -89,11 +89,11 @@ main{display:flex;flex:1;gap:0}
 .btn-cancel:hover{color:var(--text)}
 
 /* ── UPLOAD ZONES ── */
-.upload-zone{border:2px dashed var(--border);border-radius:14px;padding:28px;text-align:center;cursor:pointer;transition:.2s;position:relative}
+.upload-zone{border:2px dashed var(--border);border-radius:14px;padding:28px;text-align:center;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
 .upload-zone:hover,.upload-zone.drag{border-color:var(--gold);background:rgba(240,180,41,.05)}
-.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
-.upload-zone .ico{font-size:36px;margin-bottom:10px}
-.upload-zone p{font-size:14px;color:var(--sub)}
+.upload-zone input[type=file]{display:none}
+.upload-zone .ico{font-size:36px;margin-bottom:10px;pointer-events:none}
+.upload-zone p{font-size:14px;color:var(--sub);pointer-events:none}
 .upload-zone strong{color:var(--gold)}
 .preview-img{width:100px;height:100px;border-radius:16px;object-fit:cover;border:2px solid var(--gold);margin:10px auto;display:block}
 
@@ -249,11 +249,15 @@ main{display:flex;flex:1;gap:0}
             </div>
           </div>
 
+          <!-- Hidden file inputs -->
+          <input type="file" id="inp_icon" accept="image/*" style="display:none" onchange="handleIconFile(this.files[0])"/>
+          <input type="file" id="inp_apk" accept=".apk,application/vnd.android.package-archive" style="display:none" onchange="handleApkFile(this.files[0])"/>
+          <input type="file" id="inp_ss" accept="image/*" multiple style="display:none" onchange="handleScreenshots(this.files)"/>
+
           <!-- Icon Upload -->
           <div class="field" style="margin-bottom:16px">
             <label>App Icon</label>
-            <div class="upload-zone" id="iconZone" ondragover="dragOver(event,'iconZone')" ondragleave="dragLeave('iconZone')" ondrop="dropFile(event,'icon')">
-              <input type="file" accept="image/*" onchange="handleIconFile(this.files[0])"/>
+            <div class="upload-zone" id="iconZone" onclick="document.getElementById('inp_icon').click()" ondragover="dragOver(event,'iconZone')" ondragleave="dragLeave('iconZone')" ondrop="dropFile(event,'icon')">
               <div class="ico">🖼️</div>
               <p><strong>Click or drag</strong> to upload icon<br/>Recommended: 512×512 PNG</p>
             </div>
@@ -264,20 +268,18 @@ main{display:flex;flex:1;gap:0}
           <!-- APK Upload -->
           <div class="field" style="margin-bottom:16px">
             <label>APK File</label>
-            <div class="upload-zone" id="apkZone" ondragover="dragOver(event,'apkZone')" ondragleave="dragLeave('apkZone')" ondrop="dropFile(event,'apk')">
-              <input type="file" accept=".apk" onchange="handleApkFile(this.files[0])"/>
+            <div class="upload-zone" id="apkZone" onclick="document.getElementById('inp_apk').click()" ondragover="dragOver(event,'apkZone')" ondragleave="dragLeave('apkZone')" ondrop="dropFile(event,'apk')">
               <div class="ico">📦</div>
               <p><strong>Click or drag</strong> to upload APK file</p>
             </div>
-            <div id="apkStatus" style="font-size:13px;color:var(--green);margin-top:8px"></div>
+            <div id="apkStatus" style="font-size:13px;margin-top:8px"></div>
             <input id="f_apk_url" type="hidden"/>
           </div>
 
           <!-- Screenshots -->
           <div class="field" style="margin-bottom:24px">
             <label>Screenshots</label>
-            <div class="upload-zone" ondragover="dragOver(event,'ssZone')" ondragleave="dragLeave('ssZone')" ondrop="dropFile(event,'screenshots')" id="ssZone">
-              <input type="file" accept="image/*" multiple onchange="handleScreenshots(this.files)"/>
+            <div class="upload-zone" id="ssZone" onclick="document.getElementById('inp_ss').click()" ondragover="dragOver(event,'ssZone')" ondragleave="dragLeave('ssZone')" ondrop="dropFile(event,'screenshots')">
               <div class="ico">📸</div>
               <p><strong>Click or drag</strong> to add screenshots<br/>You can upload multiple at once</p>
             </div>
@@ -297,10 +299,13 @@ main{display:flex;flex:1;gap:0}
         <div class="form-card" style="max-width:500px">
           <p style="font-size:14px;color:var(--sub);margin-bottom:20px">Upload your store logo and banner. These appear on the public store page.</p>
 
+          <!-- Hidden brand inputs -->
+          <input type="file" id="inp_brandLogo" accept="image/*" style="display:none" onchange="handleBrandFile(this.files[0],'logo')"/>
+          <input type="file" id="inp_brandFull" accept="image/*" style="display:none" onchange="handleBrandFile(this.files[0],'full_logo')"/>
+
           <div class="field" style="margin-bottom:20px">
             <label>Store Logo (Nav & Hero)</label>
-            <div class="upload-zone" ondragover="dragOver(event,'brandLogoZone')" ondragleave="dragLeave('brandLogoZone')" ondrop="dropFile(event,'brandLogo')" id="brandLogoZone">
-              <input type="file" accept="image/*" onchange="handleBrandFile(this.files[0],'logo')"/>
+            <div class="upload-zone" id="brandLogoZone" onclick="document.getElementById('inp_brandLogo').click()" ondragover="dragOver(event,'brandLogoZone')" ondragleave="dragLeave('brandLogoZone')" ondrop="dropFile(event,'brandLogo')" >
               <div class="ico">🏷️</div>
               <p><strong>Click or drag</strong> logo image<br/>PNG with transparency recommended</p>
             </div>
@@ -309,8 +314,7 @@ main{display:flex;flex:1;gap:0}
 
           <div class="field" style="margin-bottom:20px">
             <label>AL-HUDA ADVANCE Full Logo (wide)</label>
-            <div class="upload-zone" ondragover="dragOver(event,'brandFullZone')" ondragleave="dragLeave('brandFullZone')" ondrop="dropFile(event,'brandFull')" id="brandFullZone">
-              <input type="file" accept="image/*" onchange="handleBrandFile(this.files[0],'full_logo')"/>
+            <div class="upload-zone" id="brandFullZone" onclick="document.getElementById('inp_brandFull').click()" ondragover="dragOver(event,'brandFullZone')" ondragleave="dragLeave('brandFullZone')" ondrop="dropFile(event,'brandFull')" >
               <div class="ico">🖼️</div>
               <p><strong>Click or drag</strong> the full horizontal logo<br/>(the one with Arabic text)</p>
             </div>
