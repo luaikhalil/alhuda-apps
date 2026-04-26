@@ -1,35 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Alhuda Apps</title>
+<title>تطبيقات الهدى</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#f8f9fa;--surface:#fff;--text:#202124;--sub:#5f6368;--gold:#f0b429;--gold2:#d4960e;--dark:#1a1a2e;--blue:#1a73e8;--green:#34a853;--red:#ea4335;--border:#e0e0e0}
-body{font-family:'Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text)}
 nav{background:var(--dark);padding:0 32px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.4)}
 .nav-logo{display:flex;align-items:center;gap:14px;text-decoration:none}
 .nav-logo-icon{width:42px;height:42px;border-radius:10px;object-fit:cover}
 .nav-logo-full{height:40px;width:auto;max-width:220px;object-fit:contain;display:none}
 .nav-logo-text .brand{color:var(--gold);font-size:18px;font-weight:800;display:block}
-.nav-logo-text .s2{color:rgba(255,255,255,.45);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
+.nav-logo-text .s2{color:rgba(255,255,255,.45);font-size:11px;letter-spacing:0}
 .nav-search{flex:1;max-width:480px;margin:0 40px;position:relative}
-.nav-search input{width:100%;padding:10px 18px 10px 46px;border:none;border-radius:24px;background:rgba(255,255,255,.1);color:#fff;font-size:14px;outline:none}
+.nav-search input{width:100%;padding:10px 46px 10px 18px;border:none;border-radius:24px;background:rgba(255,255,255,.1);color:#fff;font-size:14px;font-family:'Cairo',sans-serif;outline:none}
 .nav-search input::placeholder{color:rgba(255,255,255,.4)}
-.nav-search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);opacity:.5}
-.nav-tag{background:var(--gold);color:var(--dark);font-size:11px;font-weight:800;padding:5px 12px;border-radius:12px}
-.nav-admin{color:rgba(255,255,255,.3);font-size:12px;text-decoration:none;margin-left:16px}
+.nav-search svg{position:absolute;right:16px;top:50%;transform:translateY(-50%);opacity:.5}
+.nav-tag{background:var(--gold);color:var(--dark);font-size:12px;font-weight:800;padding:5px 12px;border-radius:12px}
+.nav-admin{color:rgba(255,255,255,.3);font-size:12px;text-decoration:none;margin-right:16px}
 .nav-admin:hover{color:var(--gold)}
 .hero{background:linear-gradient(135deg,#0a0a14 0%,#1a1a2e 55%,#16213e 100%);padding:52px 24px;color:#fff;text-align:center;position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;inset:0;opacity:.04;background-image:radial-gradient(circle,var(--gold) 1px,transparent 1px);background-size:40px 40px}
 .hero-inner{position:relative;z-index:1}
 .hero-full-logo{max-height:80px;max-width:360px;object-fit:contain;margin:0 auto 20px;display:none}
 .hero-icon{width:68px;height:68px;border-radius:16px;margin:0 auto 20px;display:none;border:2px solid rgba(240,180,41,.3);object-fit:cover}
-.hero h1{font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
-.hero h2{font-size:36px;font-weight:800;margin-bottom:12px}
-.hero p{font-size:15px;opacity:.6;max-width:460px;margin:0 auto;line-height:1.6}
+.hero h1{font-size:12px;font-weight:700;letter-spacing:0;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.hero h2{font-size:36px;font-weight:900;margin-bottom:12px}
+.hero p{font-size:15px;opacity:.6;max-width:460px;margin:0 auto;line-height:1.8}
 .container{max-width:1080px;margin:0 auto;padding:0 24px}
 .loading{text-align:center;padding:80px 20px;color:var(--sub)}
 .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
@@ -38,24 +39,24 @@ nav{background:var(--dark);padding:0 32px;height:68px;display:flex;align-items:c
 .app-hero-top{display:flex;align-items:flex-start;gap:28px;padding:32px 32px 0}
 .app-icon-big{width:108px;height:108px;border-radius:24px;flex-shrink:0;border:1px solid var(--border);object-fit:cover}
 .app-name{font-size:28px;font-weight:800}
-.app-dev{color:var(--blue);font-size:14px;margin:5px 0 12px;font-weight:600}
+.app-dev{color:var(--blue);font-size:14px;margin:5px 0 12px;font-weight:700}
 .app-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .badge{font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px}
 .badge.i{background:#e8f0fe;color:var(--blue)}.badge.f{background:#e6f4ea;color:var(--green)}.badge.n{background:#fef7e0;color:#b06000}
 .stars{color:var(--gold);font-size:17px}
 .stats-row{display:flex;gap:1px;background:var(--border);border-top:1px solid var(--border);margin-top:24px}
 .stat-item{flex:1;background:var(--surface);text-align:center;padding:16px 8px}
-.stat-val{font-size:17px;font-weight:700}.stat-lbl{font-size:10px;color:var(--sub);margin-top:3px;text-transform:uppercase;letter-spacing:.7px}
+.stat-val{font-size:17px;font-weight:700}.stat-lbl{font-size:10px;color:var(--sub);margin-top:3px;letter-spacing:0}
 .app-actions{display:flex;align-items:center;gap:12px;padding:20px 32px;background:#fafafa;border-top:1px solid var(--border);flex-wrap:wrap}
-.btn-dl{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1a2e;border:none;padding:14px 36px;border-radius:30px;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:8px;text-decoration:none;transition:.2s;box-shadow:0 3px 12px rgba(240,180,41,.35)}
+.btn-dl{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1a2e;border:none;padding:14px 36px;border-radius:30px;font-size:15px;font-weight:800;font-family:'Cairo',sans-serif;cursor:pointer;display:flex;align-items:center;gap:8px;text-decoration:none;transition:.2s;box-shadow:0 3px 12px rgba(240,180,41,.35)}
 .btn-dl:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(240,180,41,.5)}
-.btn-share{background:transparent;border:1.5px solid var(--border);color:var(--sub);padding:13px 22px;border-radius:30px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px}
+.btn-share{background:transparent;border:1.5px solid var(--border);color:var(--sub);padding:13px 22px;border-radius:30px;font-size:14px;font-weight:700;font-family:'Cairo',sans-serif;cursor:pointer;display:flex;align-items:center;gap:6px}
 .btn-share:hover{background:var(--bg)}
-.app-ver{margin-left:auto;font-size:13px;color:var(--sub)}
+.app-ver{margin-right:auto;font-size:13px;color:var(--sub)}
 .section{margin:36px 0}
-.section-title{font-size:19px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-title{font-size:19px;font-weight:800;margin-bottom:18px;display:flex;align-items:center;gap:10px}
 .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
-.ss-scroll{display:flex;gap:14px;overflow-x:auto;padding-bottom:14px;scroll-snap-type:x mandatory}
+.ss-scroll{display:flex;gap:14px;overflow-x:auto;padding-bottom:14px;scroll-snap-type:x mandatory;direction:ltr}
 .ss-scroll::-webkit-scrollbar{height:4px}.ss-scroll::-webkit-scrollbar-thumb{background:#ccc;border-radius:2px}
 .ss-item{flex-shrink:0;scroll-snap-align:start;text-align:center}
 .ss-item img{height:360px;width:auto;border-radius:18px;border:1px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,.1);display:block;transition:.2s}
@@ -64,57 +65,57 @@ nav{background:var(--dark);padding:0 32px;height:68px;display:flex;align-items:c
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 @media(max-width:680px){.two-col{grid-template-columns:1fr}}
 .card{background:var(--surface);border-radius:16px;border:1px solid var(--border);padding:24px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.card p{line-height:1.75;font-size:15px;margin-bottom:10px}
+.card p{line-height:1.9;font-size:15px;margin-bottom:10px}
 .fl{list-style:none;margin:14px 0 0}.fl li{padding:7px 0;font-size:14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f0f0f0}.fl li:last-child{border:none}.fl li::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0}
 .ver-tag{display:inline-flex;align-items:center;gap:6px;background:var(--dark);color:var(--gold);font-size:12px;font-weight:700;padding:4px 12px;border-radius:10px;margin-bottom:14px}
 .wn{list-style:none;margin-top:4px}.wn li{font-size:14px;padding:6px 0;display:flex;gap:10px;border-bottom:1px solid #f5f5f5}.wn li:last-child{border:none}.wn li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0}
 .info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
 .info-item{background:var(--surface);border-radius:14px;border:1px solid var(--border);padding:16px 18px}
-.info-item .lbl{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px}.info-item .val{font-size:14px;font-weight:700}
+.info-item .lbl{font-size:11px;color:var(--sub);margin-bottom:5px;font-weight:600}.info-item .val{font-size:14px;font-weight:700}
 .install-box{background:linear-gradient(135deg,#0f0f1a,#1a1a2e 60%,#16213e);border-radius:20px;padding:32px;color:#fff;margin:36px 0}
-.install-box h3{font-size:20px;font-weight:700;color:var(--gold);margin-bottom:24px}
+.install-box h3{font-size:20px;font-weight:800;color:var(--gold);margin-bottom:24px}
 .steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:20px}
 .step{display:flex;gap:16px}.step-num{width:34px;height:34px;background:var(--gold);color:var(--dark);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0}
-.step strong{display:block;font-size:14px;margin-bottom:4px}.step span{font-size:13px;opacity:.65;line-height:1.5}
+.step strong{display:block;font-size:14px;margin-bottom:4px}.step span{font-size:13px;opacity:.65;line-height:1.7}
 .more-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
 .app-card{background:var(--surface);border-radius:16px;border:1px solid var(--border);padding:20px;display:flex;gap:16px;align-items:center;transition:.2s;cursor:pointer}
 .app-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.1);transform:translateY(-2px)}
 .app-card-icon{width:64px;height:64px;border-radius:16px;flex-shrink:0;overflow:hidden;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;background:var(--dark);font-size:28px}
 .app-card-icon img{width:100%;height:100%;object-fit:cover}
-.app-card .nm{font-size:16px;font-weight:700;margin-bottom:3px}.app-card .tp{font-size:13px;color:var(--sub);margin-bottom:8px}
+.app-card .nm{font-size:16px;font-weight:800;margin-bottom:3px}.app-card .tp{font-size:13px;color:var(--sub);margin-bottom:8px}
 .coming{font-size:11px;color:var(--blue);font-weight:700;background:#e8f0fe;padding:3px 10px;border-radius:10px;display:inline-block}
 footer{background:var(--dark);color:rgba(255,255,255,.5);text-align:center;padding:32px 24px;margin-top:56px}
 footer img{height:40px;object-fit:contain;margin-bottom:12px;opacity:.8;display:none}
-footer .brand{color:var(--gold);font-weight:700;font-size:15px}
+footer .brand{color:var(--gold);font-weight:800;font-size:15px}
 footer p{font-size:12px;margin-top:6px}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:999;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
 .modal-bg.open{display:flex}
 .modal{background:#fff;border-radius:20px;padding:36px;max-width:400px;width:90%;text-align:center}
 .modal-icon{width:72px;height:72px;border-radius:18px;margin:0 auto 16px;display:block;border:1px solid var(--border);object-fit:cover}
 .modal h3{font-size:22px;font-weight:800;margin-bottom:8px}
-.modal p{color:var(--sub);font-size:14px;margin-bottom:24px;line-height:1.6}
+.modal p{color:var(--sub);font-size:14px;margin-bottom:24px;line-height:1.8}
 .modal .btn-dl{width:100%;justify-content:center;font-size:16px;border-radius:14px}
-.modal-close{margin-top:14px;background:none;border:none;color:var(--sub);font-size:14px;cursor:pointer;padding:8px}
+.modal-close{margin-top:14px;background:none;border:none;color:var(--sub);font-size:14px;font-family:'Cairo',sans-serif;cursor:pointer;padding:8px}
 @media(max-width:600px){.app-hero-top{flex-direction:column;align-items:center;text-align:center}.app-actions{justify-content:center}.app-ver{margin:0;width:100%;text-align:center}nav .nav-search{display:none}.hero h2{font-size:26px}}
 </style>
 </head>
 <body>
 <nav>
   <a class="nav-logo" href="#">
-    <img id="navFullLogo" class="nav-logo-full" src="" alt="Alhuda Advance"/>
+    <img id="navFullLogo" class="nav-logo-full" src="" alt="الهدى أدفانس"/>
     <img id="navIcon" class="nav-logo-icon" src="" alt="" style="display:none"/>
     <div class="nav-logo-text" id="navText">
-      <span class="brand">Alhuda Apps</span>
-      <span class="s2">Official Store</span>
+      <span class="brand">تطبيقات الهدى</span>
+      <span class="s2">المتجر الرسمي</span>
     </div>
   </a>
   <div class="nav-search">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input type="text" id="searchInput" placeholder="Search apps..." oninput="filterApps(this.value)"/>
+    <input type="text" id="searchInput" placeholder="ابحث عن تطبيق..." oninput="filterApps(this.value)"/>
   </div>
   <div style="display:flex;align-items:center">
-    <span class="nav-tag">INTERNAL</span>
-    <a class="nav-admin" href="admin.html">Admin</a>
+    <span class="nav-tag">داخلي</span>
+    <a class="nav-admin" href="admin.html">الإدارة</a>
   </div>
 </nav>
 
@@ -122,34 +123,34 @@ footer p{font-size:12px;margin-top:6px}
   <div class="hero-inner">
     <img id="heroFull" class="hero-full-logo" src="" alt=""/>
     <img id="heroIcon" class="hero-icon" src="" alt=""/>
-    <h1>Alhuda Advance Hypermarket</h1>
-    <h2>Official App Store</h2>
-    <p>Download and update official apps for Alhuda staff and partners.</p>
+    <h1>الهدى أدفانس هايبرماركت</h1>
+    <h2>متجر التطبيقات الرسمي</h2>
+    <p>حمّل وحدّث التطبيقات الرسمية لموظفي وشركاء الهدى.</p>
   </div>
 </div>
 
 <div class="container" id="storeContent">
-  <div class="loading"><div class="spinner"></div>Loading apps...</div>
+  <div class="loading"><div class="spinner"></div>جاري التحميل...</div>
 </div>
 
 <div class="modal-bg" id="dlModal">
   <div class="modal">
     <img id="dlIcon" class="modal-icon" src="" alt=""/>
-    <h3 id="dlName">Download</h3>
-    <p>Official app by Alhuda Advance Hypermarket.<br/>Authorized staff only.</p>
+    <h3 id="dlName">تحميل</h3>
+    <p>تطبيق رسمي من الهدى أدفانس هايبرماركت.<br/>للموظفين المعتمدين فقط.</p>
     <a class="btn-dl" id="dlBtn" href="#" style="display:flex;align-items:center;justify-content:center;gap:8px">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Download APK
+      تحميل التطبيق
     </a>
-    <button class="modal-close" onclick="document.getElementById('dlModal').classList.remove('open')">← Back</button>
+    <button class="modal-close" onclick="document.getElementById('dlModal').classList.remove('open')">رجوع ←</button>
   </div>
 </div>
 
 <footer>
   <img id="footerLogo" src="" alt=""/>
-  <div class="brand">Alhuda Advance Hypermarket</div>
-  <p>Official Internal App Store · Authorized staff only</p>
-  <p style="margin-top:4px">© 2025 Alhuda Advance Hypermarket. All rights reserved.</p>
+  <div class="brand">الهدى أدفانس هايبرماركت</div>
+  <p>متجر التطبيقات الداخلي الرسمي · للموظفين المعتمدين فقط</p>
+  <p style="margin-top:4px">© 2025 الهدى أدفانس هايبرماركت. جميع الحقوق محفوظة.</p>
 </footer>
 
 <script>
@@ -163,7 +164,7 @@ async function loadStore(){
   loadBranding();
   const{data,error}=await sb.from('store_apps').select('*').in('status',['published','coming_soon']).order('sort_order');
   if(error||!data||!data.length){
-    document.getElementById('storeContent').innerHTML='<div style="text-align:center;padding:80px 20px;color:var(--sub)"><div style="font-size:48px;margin-bottom:16px">📱</div><p>No apps published yet.</p></div>';
+    document.getElementById('storeContent').innerHTML='<div style="text-align:center;padding:80px 20px;color:var(--sub)"><div style="font-size:48px;margin-bottom:16px">📱</div><p>لا توجد تطبيقات منشورة بعد.</p></div>';
     return;
   }
   allApps=data;
@@ -187,7 +188,7 @@ function loadBranding(){
   navFull.src=BU+'/brand/full_logo.png'+t;
   navFull.onload=()=>{
     navFull.style.display='block';
-    navText.style.display='none'; // hide "Alhuda Apps" text when real logo loads
+    navText.style.display='none';
   };
   navFull.onerror=()=>{
     const ni=document.getElementById('navIcon');
@@ -209,63 +210,64 @@ async function renderStore(apps){
   if(main){
     const{data:shots}=await sb.from('store_screenshots').select('*').eq('app_id',main.id).order('sort_order');
     const wnLines=(main.whats_new||'').split('\n').filter(l=>l.trim());
+    const updDate=new Date(main.updated_at).toLocaleDateString('ar-SA',{month:'long',year:'numeric'});
     html+=`
     <div class="app-hero" id="app-${main.id}">
       <div class="app-hero-top">
         ${main.icon_url?`<img class="app-icon-big" src="${main.icon_url}" alt="${main.name}"/>`:''}
         <div>
-          <div class="app-name">${main.name}${main.name_ar?` <span style="font-size:18px;color:var(--sub)">${main.name_ar}</span>`:''}</div>
-          <div class="app-dev">Alhuda Advance Hypermarket</div>
-          <div class="app-badges"><span class="badge i">🏢 Internal</span><span class="badge f">✓ Free</span><span class="badge n">🆕 v${main.version}</span></div>
+          <div class="app-name">${main.name_ar||main.name}${main.name?` <span style="font-size:16px;color:var(--sub);font-weight:400">${main.name}</span>`:''}</div>
+          <div class="app-dev">الهدى أدفانس هايبرماركت</div>
+          <div class="app-badges"><span class="badge i">🏢 داخلي</span><span class="badge f">✓ مجاني</span><span class="badge n">🆕 v${main.version}</span></div>
           <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--sub)"><span class="stars">★★★★★</span><strong style="color:var(--text)">${main.rating}</strong><span>· ${main.category} · ${main.size_mb}</span></div>
         </div>
       </div>
       <div class="stats-row">
-        <div class="stat-item"><div class="stat-val">v${main.version}</div><div class="stat-lbl">Version</div></div>
-        <div class="stat-item"><div class="stat-val">${main.size_mb}</div><div class="stat-lbl">Size</div></div>
-        <div class="stat-item"><div class="stat-val">${main.platform}</div><div class="stat-lbl">Requires</div></div>
-        <div class="stat-item"><div class="stat-val" style="color:var(--gold)">★ ${main.rating}</div><div class="stat-lbl">Rating</div></div>
+        <div class="stat-item"><div class="stat-val">v${main.version}</div><div class="stat-lbl">الإصدار</div></div>
+        <div class="stat-item"><div class="stat-val">${main.size_mb}</div><div class="stat-lbl">الحجم</div></div>
+        <div class="stat-item"><div class="stat-val">${main.platform}</div><div class="stat-lbl">يتطلب</div></div>
+        <div class="stat-item"><div class="stat-val" style="color:var(--gold)">★ ${main.rating}</div><div class="stat-lbl">التقييم</div></div>
       </div>
       <div class="app-actions">
         ${main.apk_url
-          ?`<a class="btn-dl" href="#" onclick="openDl('${main.id}');return false;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download APK</a>`
-          :`<button class="btn-dl" style="opacity:.6;cursor:default">APK Coming Soon</button>`}
-        <button class="btn-share" onclick="shareApp()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Share</button>
-        <span class="app-ver">Updated: ${new Date(main.updated_at).toLocaleDateString('en-GB',{month:'short',year:'numeric'})}</span>
+          ?`<a class="btn-dl" href="#" onclick="openDl('${main.id}');return false;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>تحميل التطبيق</a>`
+          :`<button class="btn-dl" style="opacity:.6;cursor:default">التطبيق قريباً</button>`}
+        <button class="btn-share" onclick="shareApp()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>مشاركة</button>
+        <span class="app-ver">آخر تحديث: ${updDate}</span>
       </div>
     </div>`;
 
     if(shots&&shots.length){
-      html+=`<div class="section"><div class="section-title">Screenshots</div><div class="ss-scroll">${shots.map(s=>`<div class="ss-item"><img src="${s.url}" alt="${s.caption||''}"/>${s.caption?`<span>${s.caption}</span>`:''}</div>`).join('')}</div></div>`;
+      html+=`<div class="section"><div class="section-title">لقطات الشاشة</div><div class="ss-scroll">${shots.map(s=>`<div class="ss-item"><img src="${s.url}" alt="${s.caption||''}"/>${s.caption?`<span>${s.caption}</span>`:''}</div>`).join('')}</div></div>`;
     }
 
     html+=`<div class="two-col" style="margin-bottom:36px">
-      <div><div class="section-title">About this app</div><div class="card"><p>${main.description||'Official internal app for Alhuda Advance Hypermarket staff.'}</p></div></div>
-      <div><div class="section-title">What's New</div><div class="card"><span class="ver-tag">⭐ Version ${main.version}</span><ul class="wn">${wnLines.length?wnLines.map(l=>`<li>${l.replace(/^[-•→✓]\s*/,'')}</li>`).join(''):'<li>Initial release</li>'}</ul></div></div>
+      <div><div class="section-title">عن التطبيق</div><div class="card"><p>${main.description||'التطبيق الرسمي للموظفين في الهدى أدفانس هايبرماركت.'}</p></div></div>
+      <div><div class="section-title">الجديد في هذا الإصدار</div><div class="card"><span class="ver-tag">⭐ الإصدار ${main.version}</span><ul class="wn">${wnLines.length?wnLines.map(l=>`<li>${l.replace(/^[-•→✓]\s*/,'')}</li>`).join(''):'<li>الإصدار الأولي</li>'}</ul></div></div>
     </div>`;
 
-    html+=`<div class="section"><div class="section-title">App Information</div><div class="info-grid">
-      <div class="info-item"><div class="lbl">Developer</div><div class="val">Alhuda Advance Hypermarket</div></div>
-      <div class="info-item"><div class="lbl">Version</div><div class="val">${main.version}</div></div>
-      <div class="info-item"><div class="lbl">Size</div><div class="val">${main.size_mb}</div></div>
-      <div class="info-item"><div class="lbl">Platform</div><div class="val">${main.platform}</div></div>
-      <div class="info-item"><div class="lbl">Category</div><div class="val">${main.category}</div></div>
-      <div class="info-item"><div class="lbl">Language</div><div class="val">Arabic, English</div></div>
+    html+=`<div class="section"><div class="section-title">معلومات التطبيق</div><div class="info-grid">
+      <div class="info-item"><div class="lbl">المطوّر</div><div class="val">الهدى أدفانس هايبرماركت</div></div>
+      <div class="info-item"><div class="lbl">الإصدار</div><div class="val">${main.version}</div></div>
+      <div class="info-item"><div class="lbl">الحجم</div><div class="val">${main.size_mb}</div></div>
+      <div class="info-item"><div class="lbl">المنصة</div><div class="val">${main.platform}</div></div>
+      <div class="info-item"><div class="lbl">الفئة</div><div class="val">${main.category}</div></div>
+      <div class="info-item"><div class="lbl">اللغة</div><div class="val">العربية، الإنجليزية</div></div>
     </div></div>`;
   }
 
-  html+=`<div class="install-box"><h3>📲 How to Install</h3><div class="steps">
-    <div class="step"><div class="step-num">1</div><div><strong>Download the APK</strong><span>Tap "Download APK" and save the file</span></div></div>
-    <div class="step"><div class="step-num">2</div><div><strong>Allow Installation</strong><span>Settings → Security → enable "Install unknown apps"</span></div></div>
-    <div class="step"><div class="step-num">3</div><div><strong>Open & Install</strong><span>Tap the downloaded file from your Downloads folder</span></div></div>
-    <div class="step"><div class="step-num">4</div><div><strong>Sign In</strong><span>Log in with your Employee ID and password</span></div></div>
+  html+=`<div class="install-box"><h3>📲 كيفية التثبيت</h3><div class="steps">
+    <div class="step"><div class="step-num">١</div><div><strong>تحميل ملف التطبيق</strong><span>اضغط على "تحميل التطبيق" واحفظ الملف</span></div></div>
+    <div class="step"><div class="step-num">٢</div><div><strong>السماح بالتثبيت</strong><span>الإعدادات ← الأمان ← تفعيل "تثبيت تطبيقات غير معروفة"</span></div></div>
+    <div class="step"><div class="step-num">٣</div><div><strong>افتح وثبّت</strong><span>اضغط على الملف المحمّل من مجلد التنزيلات</span></div></div>
+    <div class="step"><div class="step-num">٤</div><div><strong>تسجيل الدخول</strong><span>سجّل دخولك برقم موظفك وكلمة المرور</span></div></div>
   </div></div>`;
 
   if(rest.length){
-    html+=`<div class="section"><div class="section-title">More from Alhuda</div><div class="more-grid">${rest.map(a=>`
+    html+=`<div class="section"><div class="section-title">المزيد من تطبيقات الهدى</div><div class="more-grid">${rest.map(a=>`
       <div class="app-card" onclick="${a.apk_url?`openDl('${a.id}')`:``}">
         <div class="app-card-icon">${a.icon_url?`<img src="${a.icon_url}" alt="${a.name}"/>`:'📱'}</div>
-        <div><div class="nm">${a.name}</div><div class="tp">${a.category||'Business'}</div>${a.status==='coming_soon'?'<span class="coming">Coming Soon</span>':`<span class="coming" style="background:#e6f4ea;color:var(--green)">v${a.version}</span>`}</div>
+        <div><div class="nm">${a.name_ar||a.name}</div><div class="tp">${a.category||'أعمال'}</div>${a.status==='coming_soon'?'<span class="coming">قريباً</span>':`<span class="coming" style="background:#e6f4ea;color:var(--green)">v${a.version}</span>`}</div>
       </div>`).join('')}</div></div>`;
   }
 
@@ -274,13 +276,13 @@ async function renderStore(apps){
 
 function openDl(id){
   const a=_apps[id];if(!a||!a.apk_url)return;
-  document.getElementById('dlName').textContent=a.name;
+  document.getElementById('dlName').textContent=a.name_ar||a.name;
   document.getElementById('dlIcon').src=a.icon_url||'';
   document.getElementById('dlBtn').href=a.apk_url;
-  document.getElementById('dlBtn').innerHTML=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download — v${a.version}`;
+  document.getElementById('dlBtn').innerHTML=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> تحميل — v${a.version}`;
   document.getElementById('dlModal').classList.add('open');
 }
-function shareApp(){if(navigator.share)navigator.share({title:'Alhuda Apps',url:location.href});else{navigator.clipboard.writeText(location.href);alert('Link copied!');}}
+function shareApp(){if(navigator.share)navigator.share({title:'تطبيقات الهدى',url:location.href});else{navigator.clipboard.writeText(location.href);alert('تم نسخ الرابط!');}}
 function filterApps(q){if(!q){renderStore(allApps);return;}const f=allApps.filter(a=>a.name.toLowerCase().includes(q.toLowerCase())||(a.name_ar&&a.name_ar.includes(q)));renderStore(f);}
 document.getElementById('dlModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
 loadStore();
